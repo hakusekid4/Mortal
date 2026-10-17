@@ -24,6 +24,15 @@ Local check (the plan's seam): 4 rule bots play N hanchan in riichienv and repor
     pip install riichienv
     python riichilab/local_match.py --bot rule --games 10 --json
 
+## Connecting to RiichiLab
+
+The token stays outside the repository (`~/.riichilab/<bot>.token` or `RIICHILAB_TOKEN`). It is never printed or recorded.
+
+    pip install websockets
+    python riichilab/ws_client.py --mode validate --bot rule --token-file ~/.riichilab/hakuseki-rule.token
+
+Only `request_action` is answered (with `request_id`); unknown messages are ignored. `action_ack` statuses are counted: `rejected` = chombo, `defaulted` = timeout.
+
 ## Tests
 
     python -m unittest discover -s riichilab/tests
