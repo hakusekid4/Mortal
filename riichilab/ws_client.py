@@ -53,7 +53,7 @@ def _write(record: Path | None, row: dict) -> None:
 async def play(url: str, token: str, bot, record: Path | None = None) -> dict:
     """半荘 1 回(検証なら東風戦 1 回)を打ち、要約を返す。"""
     s = {"ended": False, "validation_passed": None, "requests": 0, "chombo": 0,
-         "timeouts": 0, "seat": None, "max_response_ms": 0.0, "end": None}
+         "timeouts": 0, "seat": None, "max_response_ms": 0.0, "end": None, "scores": None}
     record = Path(record) if record else None
     async with connect(url, additional_headers={"Authorization": f"Bearer {token}"},
                        max_size=None) as ws:
@@ -63,6 +63,8 @@ async def play(url: str, token: str, bot, record: Path | None = None) -> dict:
             except (TypeError, ValueError):
                 continue
             t = msg.get("type")
+            if isinstance(msg.get("scores"), list):  # 和了・流局・終局で届く最新の点数
+                s["scores"] = msg["scores"]
             if t == "start_game":
                 s["seat"] = msg.get("id")
             elif t == "request_action":

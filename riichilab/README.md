@@ -33,6 +33,12 @@ The token stays outside the repository (`~/.riichilab/<bot>.token` or `RIICHILAB
 
 Only `request_action` is answered (with `request_id`); unknown messages are ignored. `action_ack` statuses are counted: `rejected` = chombo, `defaulted` = timeout.
 
+## Nightly ranked play
+
+`.github/workflows/riichilab-nightly.yml` runs every night 02:00–05:00 JST on a self-hosted runner.
+The bot is chosen by the repository variable `RIICHILAB_NIGHTLY_BOT` (empty = do not play) and the token file by `RIICHILAB_NIGHTLY_TOKEN_NAME`.
+One chombo stops the night; timeouts and disconnects are only counted. Records go to `~/.riichilab/records/<date>.jsonl`.
+
 ## Tests
 
     python -m unittest discover -s riichilab/tests

@@ -1,0 +1,33 @@
+name: riichilab-nightly
+
+# 毎晩 2:00〜5:00(日本時間)に、母艦の自前の実行役でランク戦を回す。
+# 打つボットはリポジトリの変数 RIICHILAB_NIGHTLY_BOT で決める。空なら打たない
+# (hakuseki-zero の重みができるまで空のまま)。トークンは母艦の ~/.riichilab/ にあり、ここには無い。
+on:
+  schedule:
+    - cron: "0 17 * * *"  # UTC 17:00 = 日本時間 2:00
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: "打つ時間(時間)"
+        default: "3"
+
+concurrency:
+  group: riichilab-nightly
+  cancel-in-progress: false
+
+jobs:
+  night:
+    runs-on: [self-hosted]
+    timeout-minutes: 200
+    env:
+      BOT: ${{ vars.RIICHILAB_NIGHTLY_BOT }}
+      TOKEN_NAME: ${{ vars.RIICHILAB_NIGHTLY_TOKEN_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: deps
+        run: python3 -m pip install --user --quiet riichienv websockets
+      - name: play
+        run: |
+          python3 riichilab/nightly.py --bot "$BOT" --hours "${{ inputs.hours || '3' }}" \
+            ${TOKEN_NAME:+--token-file "$HOME/.riichilab/$TOKEN_NAME.token"}
