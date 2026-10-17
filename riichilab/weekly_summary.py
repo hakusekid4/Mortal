@@ -16,11 +16,13 @@ from pathlib import Path
 
 JST = dt.timezone(dt.timedelta(hours=9))
 API = "https://api.riichi.dev/api/v1/leaderboard?limit={limit}&offset={offset}"
+UA = "hakuseki-zero weekly summary (+https://github.com/hakusekid4/Mortal)"
 RECORD_DIR = Path.home() / ".riichilab" / "records"
 
 
 def fetch_board(limit: int, offset: int) -> list[dict]:
-    with urllib.request.urlopen(API.format(limit=limit, offset=offset), timeout=20) as r:
+    req = urllib.request.Request(API.format(limit=limit, offset=offset), headers={"User-Agent": UA})
+    with urllib.request.urlopen(req, timeout=20) as r:
         return json.load(r).get("data") or []
 
 
