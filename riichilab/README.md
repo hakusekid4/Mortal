@@ -39,6 +39,10 @@ Only `request_action` is answered (with `request_id`); unknown messages are igno
 The bot is chosen by the repository variable `RIICHILAB_NIGHTLY_BOT` (empty = do not play) and the token file by `RIICHILAB_NIGHTLY_TOKEN_NAME`.
 One chombo stops the night; timeouts and disconnects are only counted. Records go to `~/.riichilab/records/<date>.jsonl`.
 
+## Weekly summary
+
+`.github/workflows/riichilab-weekly.yml` writes `riichilab/reports/weekly/<ISO week>.md` every Sunday 19:00 JST from the night records and the public leaderboard (`api.riichi.dev`).
+
 ## Tests
 
     python -m unittest discover -s riichilab/tests

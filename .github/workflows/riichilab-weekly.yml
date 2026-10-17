@@ -1,0 +1,28 @@
+name: riichilab-weekly
+
+# 毎週日曜 19:00(日本時間)に、母艦の記録と順位表から週の要約を作り、
+# riichilab/reports/weekly/<週>.md として main に置く。ai-config の週次まとめ(21:00)がこれを貼る。
+on:
+  schedule:
+    - cron: "0 10 * * 0"  # UTC 日曜 10:00 = 日本時間 日曜 19:00
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  summary:
+    runs-on: [self-hosted]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: summary
+        run: python3 riichilab/weekly_summary.py --bot-name hakuseki-zero --out-dir riichilab/reports/weekly
+      - name: commit
+        run: |
+          python3 riichilab/secret_guard.py --repo .
+          git add riichilab/reports/weekly
+          git diff --cached --quiet && exit 0
+          git -c user.name="hakusekid4" -c user.email="hakusekid4@users.noreply.github.com" \
+            commit -m "riichilab: weekly summary $(date -u +%G-W%V)"
+          git push
