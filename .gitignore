@@ -12,3 +12,13 @@ __pycache__
 *.ipynb
 
 /_draft
+
+# riichilab: 重み・トークンは公開リポジトリに置かない(重みは別の非公開リポジトリ)
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.onnx
+.env
+.env.*
+riichilab/tokens/
