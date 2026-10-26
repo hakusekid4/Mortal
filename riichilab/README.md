@@ -33,6 +33,15 @@ The token stays outside the repository (`~/.riichilab/<bot>.token` or `RIICHILAB
 
 Only `request_action` is answered (with `request_id`); unknown messages are ignored. `action_ack` statuses are counted: `rejected` = chombo, `defaulted` = timeout.
 
+## Validation run (ticket 05)
+
+`.github/workflows/riichilab-validate.yml` is started by hand (workflow_dispatch) on the self-hosted runner.
+It plays one validation game, then one ranked hanchan, and checks the records:
+
+    python riichilab/check_record.py --validated --ranked-games 1
+
+`check_record.py` reads `~/.riichilab/records/*.jsonl` and exits 0 only when a passed validation and enough finished, chombo-free ranked games are recorded.
+
 ## Nightly ranked play
 
 `.github/workflows/riichilab-nightly.yml` runs every night 02:00–05:00 JST on a self-hosted runner.

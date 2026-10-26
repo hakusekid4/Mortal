@@ -1,0 +1,47 @@
+name: riichilab-validate
+
+# チケット 05。手で起動するだけ(定期では動かない)。母艦の自前の実行役で、
+# 1) 検証用の入口で東風戦 1 回を打って通過を確かめ、2) ランク戦の半荘を 1 回だけ打ち、
+# 3) 記録から check_record.py で両方を確かめる。規則のボットはこの 1 回で止める
+# (夜の回し役の変数 RIICHILAB_NIGHTLY_BOT には入れない)。トークンは母艦の ~/.riichilab/ にあり、ここには無い。
+on:
+  workflow_dispatch:
+    inputs:
+      bot:
+        description: "ボット(ws_client.py の --bot)"
+        default: "rule"
+      token_name:
+        description: "~/.riichilab/<名前>.token の名前"
+        default: "hakuseki-rule"
+      ranked:
+        description: "検証のあとランク戦を 1 回打つ"
+        type: boolean
+        default: true
+
+concurrency:
+  group: riichilab-nightly  # 夜の回し役と同時に打たない
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: [self-hosted]
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: deps
+        run: python3 -m pip install --user --quiet riichienv websockets
+      - name: validate
+        run: |
+          python3 riichilab/ws_client.py --mode validate --bot "${{ inputs.bot }}" \
+            --token-file "$HOME/.riichilab/${{ inputs.token_name }}.token" \
+            --record "$HOME/.riichilab/records/validate.jsonl"
+      - name: ranked (1 hanchan)
+        if: ${{ inputs.ranked }}
+        run: |
+          python3 riichilab/ws_client.py --mode ranked --bot "${{ inputs.bot }}" \
+            --token-file "$HOME/.riichilab/${{ inputs.token_name }}.token" \
+            --record "$HOME/.riichilab/records/ranked-once.jsonl"
+      - name: check
+        run: |
+          python3 riichilab/check_record.py --validated \
+            --ranked-games ${{ inputs.ranked && '1' || '0' }}
