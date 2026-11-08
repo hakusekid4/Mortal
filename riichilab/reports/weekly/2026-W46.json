@@ -1,0 +1,17 @@
+{
+ "week": "2026-W46",
+ "bot_name": "hakuseki-zero",
+ "games": 0,
+ "rank_counts": {
+  "1": 0,
+  "2": 0,
+  "3": 0,
+  "4": 0
+ },
+ "avg_rank": null,
+ "chombo": 0,
+ "timeouts": 0,
+ "disconnects": 0,
+ "lost_games": [],
+ "board": null
+}
